@@ -157,5 +157,155 @@ answer(rddA=rddA, rddB=rddB)
 [('orange', ('fruit', 5)), ('orange', ('fruit', 5)), ('banana', ('fruit', 3))]
 ```
 
+# 7. Go dutch!
+Your friend and you went to a high class restaurant to eat dinner. After eating a cake, a waiter came and gave you the bill. You have to check the bill what are your orders and what not.
+
+#### answer
+```python
+rddA = sc.parallelize([('fruit','apple'),
+                       ('fruit','apple'),
+                       ('fruit','banana'),
+                       ('3c','mac')])
+
+rddB = sc.parallelize([('apple', 5),
+                       ('banana', 3),
+                       ('kiwi', 10)])
+
+def answer(rddA, rddB):
+    # Start to write your code
+    ans = rddA.map(lambda x:(x[1],x[0])) \
+              .leftOuterJoin(rddB.map(lambda x:(x[0],x[1]))) \
+              .collect()
+    # End
+    return sorted(ans)
+
+answer(rddA=rddA, rddB=rddB)
+```
+
+#### output
+```
+[('apple', ('fruit', 5)),
+ ('apple', ('fruit', 5)),
+ ('banana', ('fruit', 3)),
+ ('mac', ('3c', None))]
+```
+
+# 8. A fruit store
+There is a fruit store in the corner around your company. You would like to buy some fruit for your family, so you walked into the store and bought fruit. Weight of each fruit are not equal, and you have to find the average of it.
+
+#### answer
+```python
+inputA = sc.parallelize([('apple', [3, 5]), ('banana', [5, 5])])
+
+def answer(rdd):
+    # Please write your code below.
+    ans = inputA.mapValues(lambda x: sum(x) / len(x)).collect()
+    return ans
+
+answer(rdd=inputA)
+```
+
+#### output
+```
+[('apple', 4.0), ('banana', 5.0)]
+```
+
+# 9. Happy Trip
+You and your friend go travel this week. You buy flight tickets together and the format of flight ticket is ("Seat", ("your name", "id of this oder")). You have to find where is your seat from tickets.
+
+#### answer
+```python
+rdd = sc.parallelize([(u'Some1', (u'ABC', 9989)),
+                      (u'Some2', (u'XYZ', 235)),
+                      (u'Some3', (u'BBB', 5379)),
+                      (u'Some4', (u'ABC', 5379))]) 
+keyword = 'ABC'
+
+def answer(rdd, keyword):
+    # Write your code below.
+    ans = rdd.filter(lambda x: x[1][0] == keyword).collect()
+    return ans
+
+answer(rdd=rdd, keyword=keyword)
+```
+
+#### output
+```
+[('Some1', ('ABC', 9989)), ('Some4', ('ABC', 5379))]
+```
+
+# 10. Happy Trip 2
+Your friend would like to know how much of the sum of order id. Please tell him/ her.
+
+#### answer
+```python
+rdd =  sc.parallelize([(u'Some1', (u'ABC', 9987)),
+                       (u'Some2', (u'XYZ', 235)),
+                       (u'Some3', (u'BBB', 5379)),
+                       (u'Some4', (u'ABC', 5379))]) 
+keyword = 'ABC'
+
+def answer(rdd, keyword):
+    # Write your code below.
+    ans = rdd.filter(lambda x: x[1][0] == keyword) \
+             .map(lambda x: x[1][1]).sum()
+    return ans
+
+answer(rdd=rdd, keyword=keyword)
+```
+
+#### output
+```
+15366
+```
+
+# 11. Pick up peanuts by human intelligence
+In a peanuts factory, there are many workers examining peanuts if meet the standard. If you were one of them, which peanuts will be out?
+
+#### answer
+```python
+rdd = sc.parallelize([('Ryan', (1, 3, 5, 7, 9)), ('IFeng', (2, 4, 6, 8, 10))])
+threshold = 3
+
+def answer(rdd, threshold):
+    # Please write your code below.
+    ans = rdd.mapValues(lambda x: tuple(i for i in x if i > threshold)) \
+             .collect()
+    return ans
+
+answer(rdd=rdd, threshold=threshold)
+```
+
+#### output
+```
+[('Ryan', (5, 7, 9)), ('IFeng', (4, 6, 8, 10))]
+```
+
+# 12. A bored child.
+A child was in a office for waiting his father. He found there is a word puzzle on the ground, and he tried to complete it. Please give him a little hit to solve the problem.
+
+#### answer
+```python
+rdd = sc.parallelize([(2, 'hello hi how are you')])
+
+def answer(rdd):
+    # Write your code below.
+    ans = rdd.mapValues(lambda x: x.split(' ')) \
+             .flatMapValues(lambda x: x) \
+             .collect()
+    return ans
+
+answer(rdd=rdd)
+```
+
+#### output
+```
+[(2, 'hello'), (2, 'hi'), (2, 'how'), (2, 'are'), (2, 'you')]
+```
+
+
+
+
+
 
 
