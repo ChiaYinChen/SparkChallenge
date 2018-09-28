@@ -281,7 +281,7 @@ answer(rdd=rdd, threshold=threshold)
 [('Ryan', (5, 7, 9)), ('IFeng', (4, 6, 8, 10))]
 ```
 
-# 12. A bored child.
+# 12. A bored child
 A child was in a office for waiting his father. He found there is a word puzzle on the ground, and he tried to complete it. Please give him a little hit to solve the problem.
 
 #### answer
@@ -303,8 +303,175 @@ answer(rdd=rdd)
 [(2, 'hello'), (2, 'hi'), (2, 'how'), (2, 'are'), (2, 'you')]
 ```
 
+# 13. Do you have ever heard user defined function?
+Do you have freestyle? Even if there is no function you would like to use in pyspark, you can write it by yourself! Please write your own function to do the below task.
 
+#### answer
+```python
+class Ans(object):
+    def answer(self, rdd):
+        # Write your code below.
+        ans = rdd.mapValues(lambda x: func(x)).collect()
+        return ans
 
+    @staticmethod
+    def func(x):
+        # Write your function below.
+        y = x + 1
+        return y
+
+rdd = sc.parallelize([('apple', 5)])
+ans = Ans()
+ans.answer(rdd=rdd)
+```
+
+#### output
+```
+[('apple', 6)]
+```
+
+# 14. A hard-work clerk
+David is a hard-work in BigCamera. He have to make an inventory of stock. Please help him as soon as possible!
+
+#### answer
+```python
+rdd = sc.parallelize([('apple', 'fruit'), ('apple', 'fruit'), ('banana', 'fruit'), ('mac', '3c'), ('ipad', '3c'), ('ipad', '3c'), ('ipad', '3c')])
+
+def answer(rdd):
+    # Write your code below.
+    ans = sorted([(i[0][1],i[0][0],i[1]) for i in rdd.countByValue().items()])
+    return ans
+
+answer(rdd=rdd)
+```
+
+#### output
+```
+[('3c', 'ipad', 3),
+ ('3c', 'mac', 1),
+ ('fruit', 'apple', 2),
+ ('fruit', 'banana', 1)]
+```
+
+# 15. Find the word
+Sometimes the server will receive abnormal information because of delay or some other issues. Please help me find the word/ words according to the condition.
+
+#### answer
+```python
+rdd = sc.parallelize(["hello hello world"])
+condition = 2
+
+def answer(rdd, condition):
+    # Start to write your code
+    ans = rdd.flatMap(lambda line: line.split(" ")) \
+             .map(lambda word: (word, 1)) \
+             .reduceByKey(lambda a, b: a + b) \
+             .filter(lambda x: x[1] == condition) \
+             .keys().collect()
+    # End
+    return ans
+
+answer(rdd=rdd, condition=condition)
+```
+
+#### output
+```
+['hello']
+```
+
+# 16. Do you have freestyle 2?
+Please find how many kinds of food were eaten by Bryan each day.
+
+#### answer
+```python
+rdd = sc.parallelize([('9/30', ['egg', 'steak'])])
+
+def answer(rdd):
+    # Start to write your code
+    ans = rdd.mapValues(len).collect()
+    # End
+    return ans
+
+answer(rdd=rdd)
+```
+
+#### output
+```
+[('9/30', 2)]
+```
+
+# 17. Basic text mining
+You are a expert of text mining. You would like to order your result before publishing. Please order words by count in descending and order them by alpha-beta if the number of them are the same.
+
+#### answer
+```python
+rdd = sc.parallelize(["hello hello world"])
+
+def answer(rdd):
+    # Please write your code below.
+    ans = rdd.flatMap(lambda line: line.split(" ")) \
+             .map(lambda word: (word, 1)) \
+             .reduceByKey(lambda a, b: a + b) \
+             .sortByKey(ascending=True) \
+             .sortBy(lambda x: x[1], ascending=False) \
+             .collect()
+    return ans
+
+answer(rdd=rdd)
+```
+
+#### output
+```
+[('hello', 2), ('world', 1)]
+```
+
+# 18. Dating Party
+In a dating party Ryan and his friends meet Iris and her friends. They quickly found their initial are the same, so they would like to dance with people whose initial letter is the same as heself/ herself.
+
+#### answer
+```python
+inputA = sc.parallelize(['Ryan', 'IFeng', 'Larry'])
+inputB = sc.parallelize(['Iris', 'Rose', 'Lion'])
+
+def answer(rdd1, rdd2):
+    # Please write your code below.
+    ans = rdd1.map(lambda x: (x[0],x)) \
+              .union(rdd2.map(lambda x: (x[0],x))) \
+              .reduceByKey(lambda x,y : (x, y)) \
+              .map(lambda x: x[1]) \
+              .collect()
+    return ans
+
+answer(rdd1=inputA, rdd2=inputB)
+```
+
+#### output
+```
+[('Ryan', 'Rose'), ('Larry', 'Lion'), ('IFeng', 'Iris')]
+```
+
+# 19. Report Number
+You are a squad leader army. In one day morning, you ask your solder line up by their alpha-beta of initial letter of name and report their number. Please check if their is anyone on the wrong position.
+
+#### answer
+```python
+inputA = sc.parallelize(['Ryan', 'IFeng', 'Larry'])
+
+def answer(rdd):
+    # Please write your code below.
+    ans = rdd.sortByKey(ascending=True)\
+             .zipWithIndex() \
+             .map(lambda x: (x[1]+1, x[0])) \
+             .collect()
+    return ans
+
+answer(rdd=inputA)
+```
+
+#### output
+```
+[(1, 'IFeng'), (2, 'Larry'), (3, 'Ryan')]
+```
 
 
 
